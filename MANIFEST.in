@@ -1,0 +1,6 @@
+include LICENSE
+include MANIFEST.in
+include versioneer.py
+
+graft gpcr_ecl_saltbridge
+global-exclude *.py[cod] __pycache__ *.so
