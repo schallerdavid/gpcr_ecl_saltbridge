@@ -1,8 +1,6 @@
-name: test
+name: gpcr_ecl_saltbridge
 channels:
-
   - conda-forge
-
   - defaults
 dependencies:
     # Base depends
@@ -13,6 +11,9 @@ dependencies:
   - pytest
   - pytest-cov
   - codecov
+
+    # Other
+  - biopython
 
     # Pip-only installs
   #- pip:
