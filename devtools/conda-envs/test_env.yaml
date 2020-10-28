@@ -14,6 +14,7 @@ dependencies:
 
     # Other
   - biopython
+  - jupyterlab
 
     # Pip-only installs
   #- pip:
