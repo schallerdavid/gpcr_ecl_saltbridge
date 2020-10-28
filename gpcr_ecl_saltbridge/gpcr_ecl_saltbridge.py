@@ -21,31 +21,36 @@ DATA = pathlib.Path(__file__).parent.absolute() / 'data'
 
 
 def distance(x, y):
-    """ This function returns the euclidean distance between two point in three dimensional space. """
+    """ Calculate the euclidean distance between two point in three dimensional space. """
     return ((x[0] - y[0]) ** 2 + (x[1] - y[1]) ** 2 + (x[2] - y[2]) ** 2) ** 0.5
 
 
 def get_gpcr_structures():
+    """ Retrieve available GPCR structures from GPCRDB. """
+
     url = 'https://gpcrdb.org/services/structure/'
     response = urlopen(url)
     structures = json.loads(response.read().decode('utf-8'))
+
     return structures
 
 
 def get_gpcr_sequence_dict(protein_name):
+    """ Retrieve a dictionary with the residue id as key and a list of residue name and generic number as value. """
     url = 'https://gpcrdb.org/services/residues/{}'.format(protein_name)
     response = urlopen(url)
     protein = json.loads(response.read().decode('utf-8'))
+
     sequence_dict = OrderedDict()
     for residue in protein:
         sequence_dict[residue['sequence_number']] = [residue['amino_acid'], residue['display_generic_number']]
+
     return sequence_dict
 
 
 def generate_pdb_code_dict(directory=DATA):
-    """ Retrieves data from the GPCRDB to build or update a dictionary with pdb code as key and a list
-    with gene name and preferred chain as value. It can be saved as pickle-file in a data directory in the provided
-    directory. """
+    """ Retrieve data from the GPCRDB to build or update a dictionary with pdb code as key and a list with gene name
+    and preferred chain as value. """
     directory.mkdir(parents=True, exist_ok=True)
     pdb_code_dict_path = directory / 'pdb_code_dict.pkl'
 
@@ -66,9 +71,8 @@ def generate_pdb_code_dict(directory=DATA):
 
 
 def generate_sequence_dict(directory=DATA):
-    """ This functions retrieves data from the GPCRDB to build or update a dictionary with gene name as key and a
-    dictionary as value with residue id as key and a list with amino acid and GPCRDB number as value. It can be saved
-    as pickle-file in a data directory in the provided directory. """
+    """ Retrieve data from the GPCRDB to build or update a dictionary with gene name as key and a
+    dictionary as value with residue id as key and a list with amino acid and GPCRDB number as value. """
     directory.mkdir(parents=True, exist_ok=True)
     sequence_dict_path = directory / 'sequence_dict.pkl'
 
@@ -110,7 +114,7 @@ def download_pdb_files(pdb_codes, directory=DATA):
 
 
 def update_data(directory=DATA):
-    """ This function updates data retrieved from GPCRDB and PDB. """
+    """ Update data retrieved from GPCRDB and PDB. """
 
     pdb_code_dict = generate_pdb_code_dict(directory=directory)
     sequences_dict = generate_sequence_dict(directory=directory)
@@ -128,7 +132,9 @@ def read_pdb_structure(pdb_code, directory=DATA):
     else:
         parser = MMCIFParser()
         file_path = directory / f'{pdb_code}.cif'
+    
     structure = parser.get_structure(pdb_code, file_path)
+
     return structure
 
 
