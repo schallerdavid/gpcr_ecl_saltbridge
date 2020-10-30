@@ -14,10 +14,11 @@ from urllib.error import HTTPError
 from urllib.request import urlopen, urlretrieve
 
 # external libraries
+from appdirs import user_cache_dir
 from Bio import pairwise2
 
 
-DATA = pathlib.Path(__file__).parent.absolute() / 'data'
+DATA = pathlib.Path(user_cache_dir()) / 'gpcr_ecl_saltbridge'
 
 
 def distance(x, y):

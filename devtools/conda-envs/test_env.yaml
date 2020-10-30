@@ -13,6 +13,7 @@ dependencies:
   - codecov
 
     # Other
+  - appdirs
   - biopython
   - jupyterlab
 
