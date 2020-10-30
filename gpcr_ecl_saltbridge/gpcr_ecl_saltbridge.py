@@ -12,10 +12,12 @@ import pathlib
 import pickle
 from urllib.error import HTTPError
 from urllib.request import urlopen, urlretrieve
+import warnings
 
 # external libraries
 from appdirs import user_cache_dir
 from Bio import pairwise2
+from tqdm import tqdm
 
 
 DATA = pathlib.Path(user_cache_dir()) / 'gpcr_ecl_saltbridge'
@@ -125,6 +127,7 @@ def update_data(directory=DATA):
 
 
 def read_pdb_structure(pdb_code, directory=DATA):
+    from Bio import BiopythonWarning
     from Bio.PDB import PDBParser, MMCIFParser
 
     file_path = directory / f'{pdb_code}.pdb'
@@ -133,8 +136,10 @@ def read_pdb_structure(pdb_code, directory=DATA):
     else:
         parser = MMCIFParser()
         file_path = directory / f'{pdb_code}.cif'
-    
-    structure = parser.get_structure(pdb_code, file_path)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', BiopythonWarning)
+        structure = parser.get_structure(pdb_code, file_path)
 
     return structure
 
@@ -175,22 +180,26 @@ def assign_generic_numbers_to_pdb(sequence_dict, pdb_sequence_dict):
     return pdb_generic_numbers_dict
 
 
-def salt_bridges(directory=DATA):
+def get_salt_bridges(directory=DATA):
     """ This function analyzes pdb files to contain salt bridges between ECL2 and ECL3 and returns the pdb codes. """
     ni_residues = {'ASP': ['OD1', 'OD2'], 'GLU': ['OE1', 'OE2']}
     pi_residues = {'ARG': ['NE', 'NH1', 'NH2'], 'HIS': ['ND1', 'NE2'], 'LYS': ['NZ']}
     pdb_code_dict, sequences_dict = update_data(directory=directory)
     salt_bridge_dict = {}
-    for pdb_code in pdb_code_dict.keys():
-        print(f'Analyzing {pdb_code} ...')
+    for pdb_code in tqdm(pdb_code_dict.keys()):
         distances = []
         ecl2_ni, ecl2_pi, ecl3_ni, ecl3_pi = [], [], [], []
         protein_name, preferred_chain = pdb_code_dict[pdb_code]
         try:
             pdb_sequence_dict = generate_pdb_sequence_dict(pdb_code, preferred_chain)
         except KeyError:
-            print(f'Error for {pdb_code} ...')
-            continue
+            chain_dict = {'6ORV': 'AP'}  # erroneous chain identifiers in GPCRDB
+            if pdb_code in chain_dict.keys():
+                preferred_chain = chain_dict[pdb_code]
+                pdb_sequence_dict = generate_pdb_sequence_dict(pdb_code, preferred_chain)
+            else:
+                print(f'Error for {pdb_code} ...')
+                continue
         pdb_generic_numbers_dict = assign_generic_numbers_to_pdb(sequences_dict[protein_name], pdb_sequence_dict)
         structure = read_pdb_structure(pdb_code, directory=directory)
         h4, h5, h6, h7 = False, False, False, False
@@ -248,7 +257,6 @@ def salt_bridges(directory=DATA):
                 distances.append(distance(ni, pi))
         if len(distances) > 0:
             if min(distances) < 5:
-                print('Found salt bridge!')
                 if protein_name in salt_bridge_dict.keys():
                     salt_bridge_dict[protein_name].append(pdb_code)
                 else:

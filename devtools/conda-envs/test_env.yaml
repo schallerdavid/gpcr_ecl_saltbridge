@@ -16,6 +16,7 @@ dependencies:
   - appdirs
   - biopython
   - jupyterlab
+  - tqdm
 
     # Pip-only installs
   #- pip:
