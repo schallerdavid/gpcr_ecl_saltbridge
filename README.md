@@ -1,4 +1,4 @@
-gpcr_ecl_saltbridge
+GPCR ECL Saltbridge
 ==============================
 
 Identify GPCR structures with saltbridges between extracellular loops 2 and 3.
@@ -14,11 +14,15 @@ This repository depends on [appdirs](https://github.com/ActiveState/appdirs), [b
 
 ### Usage
 
-See jupyter notebook in the [examples directory](https://github.com/schallerdavid/gpcr_ecl_saltbridge/examples).
+See jupyter notebook in the [examples directory](https://github.com/schallerdavid/gpcr_ecl_saltbridge/tree/main/examples).
+
+### Publication
+
+The manuscript is in submission.
 
 ### Authors
 
-David Schaller
+David Schaller  
 Marcel Bermudez
 
 ### Copyright
