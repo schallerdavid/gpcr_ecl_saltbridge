@@ -261,6 +261,5 @@ def get_salt_bridges(directory=DATA):
                     salt_bridge_dict[protein_name].append(pdb_code)
                 else:
                     salt_bridge_dict[protein_name] = [pdb_code]
-    for protein_name in salt_bridge_dict.keys():
-        print(protein_name, ':', *salt_bridge_dict[protein_name])
+
     return salt_bridge_dict
